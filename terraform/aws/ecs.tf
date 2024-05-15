@@ -10,7 +10,4 @@ module "ecs_service" {
 
 data "template_file" "container_definition" {
   template = file("ecs/example.json.tpl")
-  vars = {
-    DOCKER_IMAGE = "httpd:2.4"
-  }
 }
