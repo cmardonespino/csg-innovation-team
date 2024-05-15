@@ -1,6 +1,6 @@
 [{
 	"name": "app",
-	"image": "httpd:2.4",
+	"image": "rancher/hello-world",
 	"networkMode": "awsvpc",
 	"essential": true,
 	"portMappings": [{
