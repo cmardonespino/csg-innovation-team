@@ -102,7 +102,12 @@ variable "desired_count" {
   default     = 1
 }
 
-variable "subnet_ids" {
+variable "ecs_subnet_ids" {
+  type        = list(string)
+  description = "Subnets ID's where the ECS Service will run"
+}
+
+variable "alb_subnet_ids" {
   type        = list(string)
   description = "Subnets ID's where the ECS Service will run"
 }

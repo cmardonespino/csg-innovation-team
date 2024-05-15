@@ -12,7 +12,7 @@ resource "aws_ecs_service" "service" {
   task_definition = aws_ecs_task_definition.app.family
 
   network_configuration {
-    subnets          = var.subnet_ids
+    subnets          = var.ecs_subnet_ids
     security_groups  = length(var.security_group_ids) > 0 ? [aws_security_group.app.id, join(", ", var.security_group_ids)] : [aws_security_group.app.id]
     assign_public_ip = false
   }
