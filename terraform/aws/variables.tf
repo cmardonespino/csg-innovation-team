@@ -7,6 +7,18 @@ variable "account_ids" {
   }
 }
 
+variable "repository_name" {
+  type = string
+  default = "csg-innovation-team"
+}
+
 locals {
   account_id = var.account_ids[terraform.workspace]
+
+  tags = {
+    "Terraform"   = "true"
+    "Repository"  = var.repository_name
+    "Environment" = terraform.workspace
+    "name"        = "csgtest"
+  }
 }
