@@ -1,5 +1,5 @@
 resource "aws_ecs_service" "service" {
-  name = var.namespace
+  name = var.service_name
 
   cluster = var.cluster_name
 
@@ -12,7 +12,7 @@ resource "aws_ecs_service" "service" {
   task_definition = aws_ecs_task_definition.app.family
 
   network_configuration {
-    subnets          = var.private_subnet_ids
+    subnets          = var.subnet_ids
     security_groups  = length(var.security_group_ids) > 0 ? [aws_security_group.app.id, join(", ", var.security_group_ids)] : [aws_security_group.app.id]
     assign_public_ip = false
   }
@@ -32,49 +32,10 @@ resource "aws_ecs_service" "service" {
   }
 
   deployment_controller {
-    type = var.codedeploy == true ? "CODE_DEPLOY" : "ECS"
+    type = "ECS"
   }
 
-  depends_on = [
-    aws_route53_record.application_domain,
-    aws_acm_certificate.application_domain,
-    aws_alb_listener.alb_https
-  ]
-
-  tags = var.default_tags ? merge({ "Name" = "${var.namespace}-ecs-service" }) : merge(
-    var.tags,
-    {
-      "Name" = "${var.namespace}-ecs-service"
-    },
-  )
-}
-
-resource "aws_ecs_task_definition" "app" {
-  family                = "${var.namespace}-ecs-app"
-  network_mode          = var.network_mode
-  container_definitions = var.container_definition
-  execution_role_arn    = aws_iam_role.ecs_task_role.arn
-  task_role_arn         = aws_iam_role.ecs_task_role.arn
-
-  requires_compatibilities = [var.launch_type]
-
-  cpu    = var.cpu
-  memory = var.memory
-
-  depends_on = [aws_iam_role.ecs_task_role]
-
-  lifecycle {
-    ignore_changes = [container_definitions]
+  tags = {
+    "Name" = "${var.service_name}"
   }
-
-  tags = var.default_tags ? merge({ "Name" = "${var.namespace}-task-definition" }) : merge(
-    var.tags,
-    {
-      "Name" = "${var.namespace}-task-definition"
-    },
-  )
-}
-
-output "service_name" {
-  value = aws_ecs_service.service.name
 }
