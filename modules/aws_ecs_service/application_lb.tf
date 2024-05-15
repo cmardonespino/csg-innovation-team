@@ -20,8 +20,6 @@ resource "aws_alb_target_group" "alb_targetgroup" {
   target_type          = "ip"
   deregistration_delay = var.tg_deregistration_delay
 
-
-
   health_check {
     path                = var.lb_healthcheck_path
     timeout             = var.lb_target_group_app_health_check_timeout
@@ -40,13 +38,8 @@ resource "aws_alb_listener" "alb_http" {
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-
-    redirect {
-      port        = 443
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.alb_targetgroup.arn
   }
 
   tags = {
