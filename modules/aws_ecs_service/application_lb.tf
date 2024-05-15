@@ -58,4 +58,8 @@ resource "aws_alb_listener" "alb_http" {
       status_code = "HTTP_301"
     }
   }
+
+  tags = {
+    "LoadBalancer" = aws_lb.alb.name
+  }
 }
