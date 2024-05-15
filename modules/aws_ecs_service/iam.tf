@@ -16,10 +16,6 @@ resource "aws_iam_role" "ecs_role" {
   ]
 }
 EOF
-
-  tags = {
-    "Name" = "${var.service_name}-ecs-role"
-  }
 }
 
 resource "aws_iam_role_policy" "ecs_role_policy" {
