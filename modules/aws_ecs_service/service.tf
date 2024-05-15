@@ -35,6 +35,10 @@ resource "aws_ecs_service" "service" {
     type = "ECS"
   }
 
+  depends_on = [
+    aws_alb_listener.alb_http
+  ]
+
   tags = {
     "Name" = "${var.service_name}"
   }
