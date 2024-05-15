@@ -24,8 +24,5 @@ provider "aws" {
 terraform {
   backend "local" {
     path = "~/csg-innovation-team/terraform.tfstate"
-    #profile = "carlosmardones"
-    region = "us-east-2"
-    role_arn = "arn:aws:iam::988650173498:role/DeploymentInfrastructureRole"
   }
 }
