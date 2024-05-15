@@ -4,17 +4,7 @@ resource "aws_lb" "alb" {
   internal           = var.lb_internal
   load_balancer_type = "application"
 
-  #security_groups = var.own_vpc ? [] : [aws_security_group.app.id]
-
   subnets = var.subnet_ids
-
-  /*access_logs {
-    bucket  = aws_s3_bucket.alb_logs.bucket
-    prefix  = "${var.namespace}-alb-logs"
-    enabled = true
-  }
-
-  depends_on = [aws_s3_bucket.alb_logs]*/
 
   tags = {
     "Name" = "${var.service_name}-alb"
