@@ -124,3 +124,26 @@ variable "container_port" {
   default     = "80"
   description = "Port for app container"
 }
+
+variable "network_mode" {
+  type        = string
+  default     = "awsvpc"
+  description = "Docker networking mode to use for the containers in the task"
+}
+
+variable "container_definition" {
+  type        = string
+  description = "A list of valid container definitions provided as a single valid JSON document"
+}
+
+variable "cpu" {
+  type        = string
+  default     = "1024"
+  description = "Capacity in terms of cpu assigned to the task definition"
+}
+
+variable "memory" {
+  type        = string
+  default     = "2048"
+  description = "Capacity in terms of memory assigned to the task definition"
+}
