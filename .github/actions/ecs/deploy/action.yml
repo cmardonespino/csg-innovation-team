@@ -12,6 +12,9 @@ inputs:
   ecr-access-key:
     description: "Access key to use at repository"
     required: true
+  ecr-account-id:
+    description: ""
+    required: true
   task-definition:
     description: "Task definition family to update"
     required: true
