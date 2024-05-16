@@ -17,6 +17,6 @@ resource "aws_ecs_task_definition" "app" {
   }
 
   tags = {
-    "Name" = "${var.service_name}-ecs-task-def"
+    "Name" = "${var.service_name}-ecs-app"
   }
 }

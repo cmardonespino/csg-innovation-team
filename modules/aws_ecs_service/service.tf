@@ -43,3 +43,13 @@ resource "aws_ecs_service" "service" {
     "Name" = "${var.service_name}"
   }
 }
+
+output "ecs_service_name" {
+  description = "ECS service name"
+  value = aws_ecs_service.service.name
+}
+
+output "ecs_service_cluster" {
+  description = "ECS service cluster"
+  value = aws_ecs_service.service.cluster
+}

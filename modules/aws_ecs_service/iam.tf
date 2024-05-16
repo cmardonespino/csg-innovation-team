@@ -45,9 +45,11 @@ EOF
 }
 
 output "ecs_role_name" {
+  description = "ECS role name"
   value = aws_iam_role.ecs_role.name
 }
 
 output "ecs_role_arn" {
+  description = "ECS role ARN"
   value = aws_iam_role.ecs_role.arn
 }
