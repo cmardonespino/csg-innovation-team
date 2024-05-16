@@ -18,6 +18,16 @@ inputs:
   task-definition:
     description: "Task definition family to update"
     required: true
+  ecr-name:
+    description: ""
+    required: true
+  service:
+    description: ""
+    required: true
+  cluster:
+    description: ""
+    required: true
+
 
 runs:
   using: composite
@@ -55,3 +65,19 @@ runs:
         TASK_FAMILY: ${{ inputs.task-definition }}
       run: |
         aws ecs describe-task-definition --color off --output json --task-definition $TASK_FAMILY --profile carlosmardones-dev |jq .taskDefinition >> current-task-def.json
+
+    - name: Replace image for new deployment
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1.1.3
+      with:
+        task-definition: current-task-def.json
+        container-name: app
+        image: "${{ inputs.ecr-account-id }}.dkr.ecr.us-east-2.amazonaws.com/${{ inputs.ecr-name }}:app-${{github.sha}}"
+
+    - name: Deploy new ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.11
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ inputs.service }}
+        cluster: ${{ inputs.cluster }}
+        wait-for-service-stability: true

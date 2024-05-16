@@ -45,3 +45,6 @@ jobs:
           ecr-account-id: 988650173498
           ecr-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
           ecr-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          ecr-name: csg-innovation-service
+          service: csg-innovation-service
+          cluster: csg-innovation-team
