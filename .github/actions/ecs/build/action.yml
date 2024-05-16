@@ -32,7 +32,7 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-region: us-west-2
+        aws-region: us-east-2
         role-duration-seconds: 1200
         aws-access-key-id: ${{ inputs.ecr-key-id }}
         aws-secret-access-key: ${{ inputs.ecr-access-key }}
@@ -55,7 +55,7 @@ runs:
       shell: bash
       id: build-image
       env:
-        ECR_REGISTRY: "${{ inputs.ecr-account-id }}.dkr.ecr.us-west-2.amazonaws.com"
+        ECR_REGISTRY: "${{ inputs.ecr-account-id }}.dkr.ecr.us-east-2.amazonaws.com"
         ECR_NAME: ${{ inputs.ecr-name }}
         SHA: ${{ github.sha }}
       run: |
@@ -67,5 +67,5 @@ runs:
           --tag hello-world \
           --target ${{ inputs.image-target }} .
         
-        docker tag ${app_image} hello-world
+        docker tag hello-world ${app_image}
         docker push ${app_image}
