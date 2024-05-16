@@ -1,0 +1,31 @@
+name: Build and deploy to Amazon ECS
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+      - hotfix/*
+      - release/*
+      - support/*
+      - revert-*
+      - dependabot/*
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-backend:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build backend
+        uses: ./.github/actions/ecs/build
+        with:
+          ecr-account-id: 988650173498
+          ecr-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          ecr-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}

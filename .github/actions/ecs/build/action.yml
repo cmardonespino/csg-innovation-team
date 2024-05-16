@@ -1,0 +1,51 @@
+name: ECS Build
+description: "Builds ECS service with docker"
+
+inputs:
+  ecr-account-id:
+    description: "Registry to use in docker operations, defaults to production central ecr"
+    required: true
+  ecr-key-id:
+    description: "Key id to use at repository"
+    required: true
+  ecr-access-key:
+    description: "Access key to use at repository"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - id: install-aws-cli
+      uses: unfor19/install-aws-cli-action@v1
+      with:
+        arch: amd64 # allowed values: amd64, arm64
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-west-2
+        role-duration-seconds: 1200
+        aws-access-key-id: ${{ inputs.ecr-key-id }}
+        aws-secret-access-key: ${{ inputs.ecr-access-key }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ inputs.ecr-account-id }}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build, tag, and push image to Amazon ECR
+      working-directory: ${{ inputs.dockerfile-path }}
+      shell: bash
+      id: build-image
+      run: |
+        echo "hello world"
