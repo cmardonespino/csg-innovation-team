@@ -43,3 +43,11 @@ resource "aws_iam_role_policy" "ecs_role_policy" {
 EOF
 
 }
+
+output "ecs_role_name" {
+  value = aws_iam_role.ecs_role.name
+}
+
+output "ecs_role_arn" {
+  value = aws_iam_role.ecs_role.arn
+}
