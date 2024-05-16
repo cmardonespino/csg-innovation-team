@@ -27,5 +27,6 @@ jobs:
         uses: ./.github/actions/ecs/build
         with:
           ecr-account-id: 988650173498
+          ecr-name: csg-innovation-service
           ecr-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
           ecr-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}

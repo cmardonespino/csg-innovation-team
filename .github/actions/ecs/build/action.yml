@@ -19,6 +19,9 @@ inputs:
     description: ""
     required: true
     default: backend
+  ecr-name:
+    description: ""
+    required: true
 
 runs:
   using: composite
@@ -51,9 +54,18 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       shell: bash
       id: build-image
+      env:
+        ECR_REGISTRY: "${{ inputs.ecr-account-id }}.dkr.ecr.us-west-2.amazonaws.com"
+        ECR_NAME: ${{ inputs.ecr-name }}
+        SHA: ${{ github.sha }}
       run: |
+        export app_image="${ECR_REGISTRY}/${ECR_NAME}:app-${SHA}"
+        
         docker build \
           --progress=plain \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --tag hello-world \
           --target ${{ inputs.image-target }} .
+        
+        docker tag ${app_image} hello-world
+        docker push ${app_image}
