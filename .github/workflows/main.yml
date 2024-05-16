@@ -41,6 +41,7 @@ jobs:
       - name: Deploy backend
         uses: ./.github/actions/ecs/deploy
         with:
+          task-definition: csg-innovation-service-ecs-app
           ecr-account-id: 988650173498
           ecr-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
           ecr-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}

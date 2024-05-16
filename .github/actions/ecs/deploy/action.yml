@@ -48,17 +48,10 @@ runs:
       with:
         registries: ${{ inputs.ecr-account-id }}
 
-    - name: Assume DeploymentInfrastructure role
-      uses: aws-actions/configure-aws-credentials@v2.2.0
-      with:
-        aws-region: us-east-2
-        role-to-assume: "arn:aws:iam::${{ inputs.ecr-account-id }}:role/DeploymentInfrastructureRole"
-        role-duration-seconds: 1200
-
     - name: Get current task definition
       id: get-task-def
       shell: bash
       env:
         TASK_FAMILY: ${{ inputs.task-definition }}
       run: |
-        aws ecs describe-task-definition --color off --output json --task-definition $TASK_FAMILY |jq .taskDefinition >> current-task-def.json
+        aws ecs describe-task-definition --color off --output json --task-definition $TASK_FAMILY --profile carlosmardones-dev |jq .taskDefinition >> current-task-def.json
