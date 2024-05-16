@@ -1,0 +1,56 @@
+name: Deploy to Amazon ECS
+description: "Optionally builds and deploys an app to an ECS service"
+
+inputs:
+  image-tag:
+    description: "Docker image tag to build and/or deploy, defaults to commit sha"
+    required: false
+    default: ${{ github.sha }}
+  ecr-key-id:
+    description: "Key id to use at repository"
+    required: true
+  ecr-access-key:
+    description: "Access key to use at repository"
+    required: true
+  task-definition:
+    description: "Task definition family to update"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install AWS CLI
+      id: install-aws-cli
+      uses: unfor19/install-aws-cli-action@v1
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-region: us-east-2
+        role-duration-seconds: 1200
+        aws-access-key-id: ${{ inputs.ecr-key-id }}
+        aws-secret-access-key: ${{ inputs.ecr-access-key }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ inputs.ecr-account-id }}
+
+    - name: Assume DeploymentInfrastructure role
+      uses: aws-actions/configure-aws-credentials@v2.2.0
+      with:
+        aws-region: us-east-2
+        role-to-assume: "arn:aws:iam::${{ inputs.ecr-account-id }}:role/DeploymentInfrastructureRole"
+        role-duration-seconds: 1200
+
+    - name: Get current task definition
+      id: get-task-def
+      shell: bash
+      env:
+        TASK_FAMILY: ${{ inputs.task-definition }}
+      run: |
+        aws ecs describe-task-definition --color off --output json --task-definition $TASK_FAMILY |jq .taskDefinition >> current-task-def.json
