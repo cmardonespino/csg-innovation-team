@@ -12,13 +12,19 @@ variable "repository_name" {
   default = "csg-innovation-team"
 }
 
+variable "db_instance_password" {
+  description = "Master database password"
+}
+
 locals {
   account_id = var.account_ids[terraform.workspace]
+
+  infra_environment = terraform.workspace
 
   tags = {
     "Terraform"   = "true"
     "Repository"  = var.repository_name
-    "Environment" = terraform.workspace
+    "Environment" = local.infra_environment
     "name"        = "csgtest"
   }
 }
