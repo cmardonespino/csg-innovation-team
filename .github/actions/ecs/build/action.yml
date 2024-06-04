@@ -1,0 +1,71 @@
+name: ECS Build
+description: "Builds ECS service with docker"
+
+inputs:
+  ecr-account-id:
+    description: "Registry to use in docker operations, defaults to production central ecr"
+    required: true
+  ecr-key-id:
+    description: "Key id to use at repository"
+    required: true
+  ecr-access-key:
+    description: "Access key to use at repository"
+    required: true
+  working-directory:
+    description: ""
+    required: true
+    default: ./code
+  image-target:
+    description: ""
+    required: true
+    default: backend
+  ecr-name:
+    description: ""
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-east-2
+        role-duration-seconds: 1200
+        aws-access-key-id: ${{ inputs.ecr-key-id }}
+        aws-secret-access-key: ${{ inputs.ecr-access-key }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ inputs.ecr-account-id }}
+        mask-password: true
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build, tag, and push image to Amazon ECR
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      id: build-image
+      env:
+        ECR_REGISTRY: "${{ inputs.ecr-account-id }}.dkr.ecr.us-east-2.amazonaws.com"
+        ECR_NAME: ${{ inputs.ecr-name }}
+        SHA: ${{ github.sha }}
+      run: |
+        export app_image="${ECR_REGISTRY}/${ECR_NAME}:app-${SHA}"
+        
+        docker build \
+          --progress=plain \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
+          --tag hello-world \
+          --target ${{ inputs.image-target }} .
+        
+        docker tag hello-world ${app_image}
+        docker push ${app_image}

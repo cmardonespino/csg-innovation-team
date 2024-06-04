@@ -1,0 +1,50 @@
+name: Build and deploy to Amazon ECS
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+      - hotfix/*
+      - release/*
+      - support/*
+      - revert-*
+      - dependabot/*
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-backend:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build backend
+        uses: ./.github/actions/ecs/build
+        with:
+          ecr-account-id: 988650173498
+          ecr-name: csg-innovation-service
+          ecr-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          ecr-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+
+  deploy-backend:
+    runs-on: self-hosted
+    needs: build-backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy backend
+        uses: ./.github/actions/ecs/deploy
+        with:
+          task-definition: csg-innovation-service-ecs-app
+          ecr-account-id: 988650173498
+          ecr-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          ecr-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          ecr-name: csg-innovation-service
+          service: csg-innovation-service
+          cluster: csg-innovation-team
